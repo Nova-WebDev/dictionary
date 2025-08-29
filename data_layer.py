@@ -1,4 +1,6 @@
 import sqlite3, bcrypt
+from setting import CONNECTION_DATABASE
+
 
 def is_valid_email(email):
     if email.count("@") != 1:
@@ -24,7 +26,7 @@ def check_password(password, hashed):
 
 def get_blocked_users():
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT username FROM users WHERE password LIKE '!:%'")
             rows = cursor.fetchall()
@@ -32,7 +34,7 @@ def get_blocked_users():
         return [r[0] for r in rows]
 
     except Exception as e:
-        print(f"Database error: {e}")
+        print(f"[*][get_blocked_users]Database error: {e}")
         return []
 
 
@@ -41,7 +43,7 @@ def get_blocked_users():
 
 def get_user(username):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT mail, password, authorization FROM users WHERE username = ?", (username,))
             row = cursor.fetchone()
@@ -63,7 +65,7 @@ def get_user(username):
 
 def find_user_by_email(email):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT username, mail, password, authorization FROM users WHERE mail = ?", (email,))
             row = cursor.fetchone()
@@ -90,7 +92,7 @@ def update_user(username, mail, password, authorization="normal_user", flag=True
         return False
 
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
 
             cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
@@ -124,7 +126,7 @@ def insert_user(username, mail, password, authorization="normal_user"):
         return False
 
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
 
             cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
@@ -154,7 +156,7 @@ def insert_user(username, mail, password, authorization="normal_user"):
 
 def get_translation(en_word):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT meaning FROM translations WHERE word = ?", (en_word,))
             row = cursor.fetchone()
@@ -170,7 +172,7 @@ def get_translation(en_word):
 
 def delete_translation(en_word):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
 
             cursor.execute("SELECT 1 FROM translations WHERE word = ?", (en_word,))
@@ -192,7 +194,7 @@ def delete_translation(en_word):
 
 def find_key_by_translation(fa_word):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT word FROM translations WHERE meaning = ?", (fa_word,))
             row = cursor.fetchone()
@@ -206,7 +208,7 @@ def find_key_by_translation(fa_word):
 
 def insert_translation(en_word, fa_word):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
 
             cursor.execute("SELECT 1 FROM translations WHERE word = ?", (en_word,))
@@ -226,7 +228,7 @@ def insert_translation(en_word, fa_word):
 
 def update_translation(en_word, new_fa_word):
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
 
             cursor.execute("SELECT 1 FROM translations WHERE word = ?", (en_word,))
@@ -247,7 +249,7 @@ def update_translation(en_word, new_fa_word):
 
 def get_dictionary():
     try:
-        with sqlite3.connect("database.db") as conn:
+        with sqlite3.connect(CONNECTION_DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT word, meaning FROM translations")
             rows = cursor.fetchall()

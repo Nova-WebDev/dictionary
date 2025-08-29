@@ -1,0 +1,2 @@
+TOKEN_EXPIRATION = 5 * 60
+CONNECTION_DATABASE = "database.db"

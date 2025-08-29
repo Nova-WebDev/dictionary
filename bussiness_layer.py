@@ -1,4 +1,5 @@
 import pprint, random, time, smtplib
+from setting import TOKEN_EXPIRATION
 from email.mime.text import MIMEText
 from data_layer import check_password, is_valid_email, get_blocked_users, get_user, update_user, insert_user, \
     find_user_by_email, get_dictionary
@@ -190,7 +191,7 @@ def is_token_valid(token, active_users):
     created_at = active_users[token]["created_at"]
     now = time.time()
 
-    if now - created_at > 300:
+    if now - created_at > TOKEN_EXPIRATION:
         del active_users[token]
         return False
 
