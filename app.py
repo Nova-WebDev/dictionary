@@ -51,7 +51,7 @@ def main_menu_flow(your_token):
         else:
             print(menu_normal_user)
 
-        action = input("\nPlease select an option: ").strip()
+        action = input("\nPlease select an option:").strip()
 
         if action == "0":
             print("Exiting the program. Goodbye.")
