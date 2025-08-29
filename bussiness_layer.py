@@ -25,8 +25,12 @@ def unblock_user(username):
         print("User is not blocked.")
         return False
 
-    update_user(my_user.key()[0], my_user["mail"], my_user["password"], my_user["authorization"], flag=False)
+    # حذف پیشوند "!:" برای آن‌بلاک کردن
+    my_user["password"] = password[2:]
+
+    update_user(username, my_user["mail"], my_user["password"], my_user["authorization"], flag=False)
     return True
+
 
 
 def block_user(username):
@@ -42,9 +46,8 @@ def block_user(username):
 
     my_user["password"] = f"!:{password}"
 
-    update_user(my_user.key()[0], my_user["mail"], my_user["password"], my_user["authorization"], flag=False)
+    update_user(username, my_user["mail"], my_user["password"], my_user["authorization"], flag=False)
     return True
-
 
 ############
 def login_user():
