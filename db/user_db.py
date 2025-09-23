@@ -2,6 +2,39 @@ import sqlite3
 from setting import CONNECTION_DATABASE
 
 
+def user_exists(username):
+    with sqlite3.connect(CONNECTION_DATABASE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+        return cursor.fetchone() is not None
+
+
+def email_exists(email):
+    with sqlite3.connect(CONNECTION_DATABASE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
+        return cursor.fetchone() is not None
+
+
+def is_user_blocked(user_id):
+    with sqlite3.connect(CONNECTION_DATABASE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT password FROM users WHERE id = ?", (user_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            raise Exception("[*][is_user_blocked]Database error: user_id not found in users table")
+
+        password = result[0]
+
+        if isinstance(password, bytes):
+            password_str = password.decode()
+        else:
+            password_str = password
+
+        return password_str.startswith("!:")
+
+
 def get_role_id_by_name(role_name):
     with sqlite3.connect(CONNECTION_DATABASE) as conn:
         cursor = conn.cursor()
@@ -87,7 +120,7 @@ def get_user_id_by_username(username):
         return result[0]
 
 
-def get_all_blocked_users():
+def db_get_all_blocked_users():
     with sqlite3.connect(CONNECTION_DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute("""
@@ -96,9 +129,13 @@ def get_all_blocked_users():
         rows = cursor.fetchall()
 
         result = {}
-        for row in rows:
-            user_id, username, password = row
-            if password.startswith("!:"):
+        for user_id, username, password in rows:
+            if isinstance(password, bytes):
+                password_str = password.decode()
+            else:
+                password_str = password
+
+            if password_str.startswith("!:"):
                 result[user_id] = username
 
         return result
@@ -146,50 +183,48 @@ def update_user_by_id(user_id, fields):
         """, values)
 
 
-def block_user_by_id(user_id):
+def db_block_user_by_id(user_id):
     with sqlite3.connect(CONNECTION_DATABASE) as conn:
         cursor = conn.cursor()
 
-        cursor.execute("""
-            SELECT password FROM users WHERE id = ?
-        """, (user_id,))
+        cursor.execute("SELECT password FROM users WHERE id = ?", (user_id,))
         result = cursor.fetchone()
 
         if not result:
             raise Exception("[*][block_user_by_id]Database error: user_id not found in users table")
 
         current_password = result[0]
-        if current_password.startswith("!:"):
-            raise Exception("[*][block_user_by_id]Database error: user is already blocked")
 
-        blocked_password = "!:" + current_password
+        if isinstance(current_password, bytes):
+            if current_password.startswith(b"!:"):
+                raise Exception("[*][block_user_by_id]Database error: user is already blocked")
+            blocked_password = b"!:" + current_password
+        else:
+            if current_password.startswith("!:"):
+                raise Exception("[*][block_user_by_id]Database error: user is already blocked")
+            blocked_password = "!:" + current_password
 
-        cursor.execute("""
-            UPDATE users
-            SET password = ?
-            WHERE id = ?
-        """, (blocked_password, user_id))
+        cursor.execute("UPDATE users SET password = ? WHERE id = ?", (blocked_password, user_id))
 
-
-def unblock_user_by_id(user_id):
+def db_unblock_user_by_id(user_id):
     with sqlite3.connect(CONNECTION_DATABASE) as conn:
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT password FROM users WHERE id = ?
-        """, (user_id,))
+        cursor.execute("SELECT password FROM users WHERE id = ?", (user_id,))
         result = cursor.fetchone()
 
         if not result:
             raise Exception("[*][unblock_user_by_id]Database error: user_id not found in users table")
 
         password = result[0]
-        if not password.startswith("!:"):
+
+        if isinstance(password, bytes):
+            password_str = password.decode()
+        else:
+            password_str = password
+
+        if not password_str.startswith("!:"):
             raise Exception("[*][unblock_user_by_id]Database error: user is not blocked")
 
-        new_password = password[2:]  # حذف !:
+        cleaned_password = password_str[2:].encode()
 
-        cursor.execute("""
-            UPDATE users
-            SET password = ?
-            WHERE id = ?
-        """, (new_password, user_id))
+        cursor.execute("UPDATE users SET password = ? WHERE id = ?", (cleaned_password, user_id))
