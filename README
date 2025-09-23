@@ -1,0 +1,22 @@
+could you tell me what http reuqest journey is (from zero to 100)?
+
+what are cookies, session and token?
+
+how many token are there ?
+
+
+why should we use cookie instead of session?
+
+----------------------------------------------
+what are differences between http and https ?
+
+what happens when you open up a website until getting the final response
+(DNS, api, authentication, authorization and so on)
+
+what is Nginx (as reverse proxy and forward proxy) ? why do we have to use Nginx along with Django or Fastapi?
+
+what is statefull - stateless ?
+what is response code / status code?
+
+idempotent
+idempotency
