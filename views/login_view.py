@@ -1,6 +1,12 @@
-from logic.auth import login_user, sign_in_user, initiate_password_reset, complete_password_reset
+from db.user_db import UserRepository
+from logic.auth import TokenService, AuthService, PasswordResetService
 
-def register_flow():
+def register_flow(cursor):
+    user_repo = UserRepository(cursor)
+    token_service = TokenService(user_repo)
+    auth_service = AuthService(user_repo, token_service, cursor)
+    reset_service = PasswordResetService(user_repo, token_service, cursor)
+
     while True:
         print("""
 1) Log in
@@ -14,7 +20,7 @@ def register_flow():
             try:
                 username = input("Username: ").strip()
                 password = input("Password: ").strip()
-                token = login_user(username, password)
+                token = auth_service.login_user(username, password)
                 if token:
                     print("Login successful.")
                     return token
@@ -28,7 +34,7 @@ def register_flow():
                 username = input("Username: ").strip()
                 email = input("Email address: ").strip()
                 password = input("Password: ").strip()
-                token = sign_in_user(username, email, password)
+                token = auth_service.sign_in_user(username, email, password)
                 if token:
                     print("Registration successful.")
                     return token
@@ -40,14 +46,14 @@ def register_flow():
         elif choice == "3":
             try:
                 email = input("What's your email address: ").strip()
-                code = initiate_password_reset(email)
+                code = reset_service.initiate_password_reset(email)
                 if not code:
-                    print("Reset initiation failed.")
+                    print("Reset initiation failed (invalid email or user blocked).")
                     continue
 
                 for attempt in range(3):
                     user_code = input("Enter the code sent to your email: ").strip()
-                    if user_code == code:
+                    if reset_service.verify_reset_code(code, user_code):
                         break
                     print("Incorrect code.\n")
                 else:
@@ -55,7 +61,7 @@ def register_flow():
                     continue
 
                 new_password = input("Enter your new password: ").strip()
-                token = complete_password_reset(email, code, user_code, new_password)
+                token = reset_service.complete_password_reset(email, new_password)
                 if token:
                     print("Password reset successful.")
                     return token
