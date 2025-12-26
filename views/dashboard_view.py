@@ -1,12 +1,14 @@
 import time
-from db.role import get_all_roles
-from logic.actions import print_all_dictionary_words, show_fa_translations, show_en_translations, add_new_word, \
-    edit_own_word, edit_any_word, delete_own_word, delete_any_word, show_all_users, create_new_user, \
-    change_user_role, show_blocked_users, show_unblocked_users, show_users_to_unblock, block_user_by_id, \
-    unblock_user_by_id, is_token_valid, extract_payload
 import sqlite3
+from db.role import RoleRepository
+from logic.actions import DictionaryActions, UserActions, BlockActions, TokenValidator
 
-def main_menu_flow(token):
+def main_menu_flow(cursor, token):
+    role_repo = RoleRepository(cursor)
+    dict_actions = DictionaryActions(cursor)
+    user_actions = UserActions(cursor)
+    block_actions = BlockActions(cursor)
+
     menu_normal_user = """
 1) Show dict
 2) Translate from English to Farsi
@@ -46,11 +48,11 @@ def main_menu_flow(token):
     while True:
         time.sleep(2)
 
-        if not is_token_valid(token):
+        if not TokenValidator.is_token_valid(token):
             print("Session expired. Please log in again.")
             return True
 
-        payload = extract_payload(token)
+        payload = TokenValidator.extract_payload(token)
         role = payload["role"]
         username = payload["sub"]
 
@@ -71,25 +73,26 @@ def main_menu_flow(token):
             return True
 
         elif choice == "1":
-            print_all_dictionary_words(token=token, allowed_roles=("normal_user", "power_user", "admin"))
+            dict_actions.print_all_dictionary_words(token=token)
 
         elif choice == "2":
             en_word = input("Enter English word: ").strip()
-            show_fa_translations(en_word, token=token, allowed_roles=("normal_user", "power_user", "admin"))
+            dict_actions.show_fa_translations(en_word, token=token)
 
         elif choice == "3":
             fa_word = input("Enter Persian word: ").strip()
-            show_en_translations(fa_word, token=token, allowed_roles=("normal_user", "power_user", "admin"))
+            dict_actions.show_en_translations(fa_word, token=token)
 
         elif choice == "4":
             en_word = input("Enter English word: ").strip()
             fa_word = input("Enter Persian translation: ").strip()
             try:
-                add_new_word(en_word, fa_word, author_username=username, token=token, allowed_roles=("power_user", "admin"))
-            except sqlite3.IntegrityError as e:
-                print("Douplicate value en-word and fa-word!")
+                dict_actions.add_new_word(en_word, fa_word, author_username=username, token=token)
+            except sqlite3.IntegrityError:
+                print("Duplicate value en-word and fa-word!")
 
         elif choice == "5":
+            dict_actions.print_all_dictionary_words(token=token)
             try:
                 word_id = int(input("Enter word ID to edit: ").strip())
             except ValueError:
@@ -99,147 +102,113 @@ def main_menu_flow(token):
             new_fa = input("Enter new Persian word: ").strip()
 
             if role == "admin":
-                edit_any_word(word_id, new_en, new_fa, token=token, allowed_roles=("admin",))
+                dict_actions.edit_any_word(word_id, new_en, new_fa, token=token)
             else:
-                edit_own_word(word_id, new_en, new_fa, author_username=username,
-                              token=token, allowed_roles=("power_user",))
+                dict_actions.edit_own_word(word_id, new_en, new_fa, author_username=username, token=token)
 
         elif choice == "6":
+            dict_actions.print_all_dictionary_words(token=token)
             try:
                 word_id = int(input("Enter word ID to delete: ").strip())
             except ValueError:
                 print("Invalid word ID format.")
                 continue
             if role == "admin":
-                delete_any_word(word_id, token=token, allowed_roles=("admin",))
+                dict_actions.delete_any_word(word_id, token=token)
             else:
-                delete_own_word(word_id, author_username=username, token=token, allowed_roles=("power_user",))
+                dict_actions.delete_own_word(word_id, author_username=username, token=token)
 
         elif choice == "11":
-            show_all_users(current_username=username, token=token, allowed_roles=("admin",))
-
+            user_actions.show_all_users(current_username=username, token=token)
 
         elif choice == "12":
-
             new_username = input("Enter new username: ").strip()
-
             new_email = input("Enter new email: ").strip()
-
             new_password = input("Enter new password: ").strip()
 
-            roles = get_all_roles()
-
+            roles = role_repo.get_all_roles()
             print("Available roles:")
-
             for role_obj in roles:
                 print(f"{role_obj['id']}) {role_obj['role_name']}")
 
             try:
-
                 role_id = int(input("Enter role ID: ").strip())
-
             except ValueError:
-
                 print("Invalid role ID format.")
-
                 continue
 
             selected_role = next((r for r in roles if r["id"] == role_id), None)
-
             if not selected_role:
                 print("Role ID not found.")
-
                 continue
 
             confirm = False
-
             if selected_role["role_name"] == "admin":
                 confirm = input("Type 'ok' to confirm admin downgrade if needed: ").strip().lower() == "ok"
 
-            create_new_user(new_username, new_email, new_password, role_id,
-
-                            current_admin_username=username,
-
-                            confirm_admin_downgrade=confirm,
-
-                            token=token, allowed_roles=("admin",))
-
-
+            user_actions.create_new_user(new_username, new_email, new_password, role_id,
+                                         current_admin_username=username,
+                                         confirm_admin_downgrade=confirm,
+                                         token=token)
 
         elif choice == "13":
-
-            show_all_users(current_username=username, token=token, allowed_roles=("admin",))
+            user_actions.show_all_users(current_username=username, token=token)
 
             try:
-
                 target_id = int(input("Enter user ID to change role: ").strip())
-
             except ValueError:
-
                 print("Invalid user ID format.")
-
                 continue
 
-            roles = get_all_roles()
-
+            roles = role_repo.get_all_roles()
             print("Available roles:")
-
             for role_obj in roles:
                 print(f"{role_obj['id']}) {role_obj['role_name']}")
 
             try:
-
                 role_id = int(input("Enter new role ID: ").strip())
-
             except ValueError:
-
                 print("Invalid role ID format.")
-
                 continue
 
             selected_role = next((r for r in roles if r["id"] == role_id), None)
-
             if not selected_role:
                 print("Role ID not found.")
-
                 continue
 
             confirm = False
-
             if selected_role["role_name"] == "admin":
                 confirm = input("Type 'ok' to confirm admin downgrade if needed: ").strip().lower() == "ok"
 
-            change_user_role(target_user_id=target_id, new_role_id=role_id,
-                             current_admin_username=username,
-                             confirm_admin_downgrade=confirm,
-
-                             token=token, allowed_roles=("admin",))
-
+            user_actions.change_user_role(target_user_id=target_id, new_role_id=role_id,
+                                          current_admin_username=username,
+                                          confirm_admin_downgrade=confirm,
+                                          token=token)
 
         elif choice == "14":
-            show_blocked_users(token=token, allowed_roles=("admin",))
+            block_actions.show_blocked_users(token=token)
 
         elif choice == "15":
-            show_unblocked_users(current_admin_username=username, token=token, allowed_roles=("admin",))
+            block_actions.show_unblocked_users(current_admin_username=username, token=token)
             try:
                 target_id = int(input("Enter user ID to block: ").strip())
             except ValueError:
                 print("Invalid user ID format.")
                 continue
-            block_user_by_id(target_user_id=target_id,
-                             current_admin_username=username,
-                             token=token, allowed_roles=("admin",))
+            block_actions.block_user_by_id(target_user_id=target_id,
+                                           current_admin_username=username,
+                                           token=token)
 
         elif choice == "16":
-            show_users_to_unblock(current_admin_username=username, token=token, allowed_roles=("admin",))
+            block_actions.show_users_to_unblock(current_admin_username=username, token=token)
             try:
                 target_id = int(input("Enter user ID to unblock: ").strip())
             except ValueError:
                 print("Invalid user ID format.")
                 continue
-            unblock_user_by_id(target_user_id=target_id,
-                               current_admin_username=username,
-                               token=token, allowed_roles=("admin",))
+            block_actions.unblock_user_by_id(target_user_id=target_id,
+                                             current_admin_username=username,
+                                             token=token)
 
         else:
             print("Invalid choice. Please try again.")
