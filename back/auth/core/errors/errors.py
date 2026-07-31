@@ -1,49 +1,85 @@
-class TokenGenerationError(Exception):
+from app.errors import DomainError
+
+
+class TokenGenerationError(DomainError):
+    status_code = 500
+
     def __init__(self, message: str = "Failed to generate access token"):
         super().__init__(message)
 
-class RefreshTokenPersistenceError(Exception):
+
+class RefreshTokenPersistenceError(DomainError):
+    status_code = 500
+
     def __init__(self, message: str = "Failed to persist refresh token"):
         super().__init__(message)
 
-class InvalidRefreshTokenError(Exception):
+
+class InvalidRefreshTokenError(DomainError):
+    status_code = 401
+
     def __init__(self, message: str = "Invalid or expired refresh token"):
         super().__init__(message)
 
-class UserBlockedError(Exception):
+
+class UserBlockedError(DomainError):
+    status_code = 403
+
     def __init__(self, message: str = "User is blocked"):
         super().__init__(message)
 
-class UserStatePersistenceError(Exception):
+
+class UserStatePersistenceError(DomainError):
+    status_code = 500
+
     def __init__(self, message: str = "Failed to access user state store"):
         super().__init__(message)
 
-class InvalidEmailFormatError(Exception):
+
+class InvalidEmailFormatError(DomainError):
+    status_code = 400
+
     def __init__(self, message: str = "Invalid email format"):
         super().__init__(message)
 
 
-class EmailDomainNotAllowedError(Exception):
+class EmailDomainNotAllowedError(DomainError):
+    status_code = 403
+
     def __init__(self, message: str = "Email domain not allowed"):
         super().__init__(message)
 
 
-class EmailBlockedError(Exception):
+class EmailBlockedError(DomainError):
+    status_code = 403
+
     def __init__(self, message: str = "Email is blocked"):
         super().__init__(message)
 
-class EmailBlockCheckError(Exception):
+
+class EmailBlockCheckError(DomainError):
+    status_code = 500
+
     def __init__(self, message: str = "Failed to check email block status"):
         super().__init__(message)
 
-class EmailTemporarilyBlockedError(Exception):
+
+class EmailTemporarilyBlockedError(DomainError):
+    status_code = 429
+
     def __init__(self, message: str = "Email temporarily blocked"):
         super().__init__(message)
 
-class UserCreationError(Exception):
+
+class UserCreationError(DomainError):
+    status_code = 500
+
     def __init__(self, message: str = "Failed to create user"):
         super().__init__(message)
 
-class InvalidVerificationCodeError(Exception):
+
+class InvalidVerificationCodeError(DomainError):
+    status_code = 401
+
     def __init__(self, message: str = "Invalid verification code"):
         super().__init__(message)

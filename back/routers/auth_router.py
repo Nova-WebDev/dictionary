@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.db import get_session
-from app.utils.error_mapper import map_error
 
 from schemas.auth.send_code_request import SendCodeRequest
 from schemas.auth.verify_code_request import VerifyCodeRequest
@@ -46,12 +45,8 @@ async def send_code(
 ):
     validate_email_uc = get_validate_email_uc(session)
     send_code_uc = get_send_code_uc()
-
-    try:
-        await validate_email_uc.execute(payload.email)
-        return await send_code_uc.execute(payload.email)
-    except Exception as e:
-        raise map_error(e)
+    await validate_email_uc.execute(payload.email)
+    return await send_code_uc.execute(payload.email)
 
 
 @router.post("/verify-code/", response_model=RefreshTokenResponse)
@@ -64,24 +59,20 @@ async def verify_code(
     generate_refresh_uc = get_generate_refresh_token_uc()
     generate_access_uc = get_generate_access_token_uc()
 
-    try:
-        user_identity = await verify_code_uc.execute(
-            email=payload.email,
-            code=payload.code,
-        )
+    user_identity = await verify_code_uc.execute(
+        email=payload.email,
+        code=payload.code,
+    )
 
-        if user_identity is None:
-            raise InvalidVerificationCodeError()
+    if user_identity is None:
+        raise InvalidVerificationCodeError()
 
-        refresh_token_entity = await generate_refresh_uc.execute(user_identity)
-        access_token = await generate_access_uc.execute(refresh_token_entity)
+    refresh_token_entity = await generate_refresh_uc.execute(user_identity)
+    access_token = await generate_access_uc.execute(refresh_token_entity)
 
-        _set_access_cookie(response, access_token)
+    _set_access_cookie(response, access_token)
 
-        return RefreshTokenResponse(refresh_token=refresh_token_entity.token)
-
-    except Exception as e:
-        raise map_error(e)
+    return RefreshTokenResponse(refresh_token=refresh_token_entity.token)
 
 
 @router.post("/refresh/", response_model=RefreshTokenResponse)
@@ -92,16 +83,12 @@ async def refresh_token(
     rotate_uc = get_rotate_refresh_token_uc()
     generate_access_uc = get_generate_access_token_uc()
 
-    try:
-        rotated = await rotate_uc.execute(payload.refresh_token)
-        access_token = await generate_access_uc.execute(rotated)
+    rotated = await rotate_uc.execute(payload.refresh_token)
+    access_token = await generate_access_uc.execute(rotated)
 
-        _set_access_cookie(response, access_token)
+    _set_access_cookie(response, access_token)
 
-        return RefreshTokenResponse(refresh_token=rotated.token)
-
-    except Exception as e:
-        raise map_error(e)
+    return RefreshTokenResponse(refresh_token=rotated.token)
 
 
 @router.post("/log-out/")
@@ -110,11 +97,6 @@ async def logout(
     response: Response,
 ):
     logout_uc = get_logout_refresh_token_uc()
-
-    try:
-        await logout_uc.execute(payload.refresh_token)
-    except Exception as e:
-        raise map_error(e)
-
+    await logout_uc.execute(payload.refresh_token)
     response.delete_cookie("access_token", path="/")
     return {"detail": "Logged out"}
