@@ -1,0 +1,91 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: dictionary_redis
+    command: >
+      redis-server
+      --appendonly no
+      --save ""
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    networks:
+      - dictionary_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    build:
+      context: ./postgresql
+      dockerfile: Dockerfile
+    container_name: dictionary_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: dictionary
+    networks:
+      - dictionary_net
+    restart: unless-stopped
+    volumes:
+      - dictionary_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: dictionary_backend
+    networks:
+      - dictionary_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://admin:admin123@postgres:5432/dictionary"
+      SENDER_EMAIL: "sudo.novawebdev@gmail.com"
+      APP_PASSWORD: "gwyttbuawygrvjxu"
+      SMTP_HOST: "smtp.gmail.com"
+      SMTP_PORT: "465"
+      REDIS_URL: "redis://redis:6379/0"
+      REFRESH_TOKEN_TTL_SECONDS: "2592000"
+      ALLOWED_DOMAINS: '["gmail.com"]'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: dictionary_nginx
+    networks:
+      - dictionary_net
+    ports:
+      - "80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  dictionary_net:
+    driver: bridge
+
+volumes:
+  dictionary_pg_data:

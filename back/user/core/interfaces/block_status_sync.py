@@ -1,0 +1,6 @@
+from typing import Protocol
+
+
+class IBlockStatusSync(Protocol):
+    async def block(self, public_id: str) -> None: ...
+    async def unblock(self, public_id: str) -> None: ...
