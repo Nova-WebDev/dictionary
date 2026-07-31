@@ -10,8 +10,11 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 _DEFAULT_KEY_PATH = Path(__file__).resolve().parent.parent / "key" / "public_key.pem"
 
 
-class TokenValidationError(Exception):
-    pass
+from app.errors import DomainError
+
+
+class TokenValidationError(DomainError):
+    status_code = 401
 
 
 class TokenValidator:
