@@ -16,6 +16,7 @@ docker build -t dictionary-base ./base_python
 # Start all services
 docker compose up --build
 
+
 # Frontend dev server (runs on host, port 5173 — nginx proxies / to it)
 cd front && npm run dev
 ```
