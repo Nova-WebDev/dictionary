@@ -1,4 +1,3 @@
-
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -62,40 +61,29 @@ htmlcov/
 dist/
 build/
 
-
 .DS_Store
 Thumbs.db
 desktop.ini
-
-
 
 *.swp
 *.swo
 *~
 
-
-
 .idea/
 
-
-
 .vscode/
-
 
 tmp/
 temp/
 *.tmp
 
 
-
 *.sqlite3
 *.db
 
 
-
 uploads/
 media/
-
 
 
 *.pem
