@@ -4,8 +4,7 @@
 
 Email-based passwordless dictionary app. Backend: 
 FastAPI + SQLAlchemy async + Redis + PostgreSQL. 
-Frontend: 
-React 19 + Vite + TypeScript. Deployed via Docker Compose with Nginx reverse proxy.
+Frontend: React 19 + Vite + TypeScript. Deployed via Docker Compose with Nginx reverse proxy.
 
 ## Build & run
 
