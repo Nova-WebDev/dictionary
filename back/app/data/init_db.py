@@ -1,8 +1,10 @@
 from app.data.db import engine
 from app.data.base import Base
 
+
 def _load_models():
-    pass
+    from user.infrastructure.data.models import User  # noqa
+    from dictionary.infrastructure.data.models import WordEntry  # noqa
 
 
 async def init_db():

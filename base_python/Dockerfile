@@ -1,5 +1,4 @@
 FROM python:3.12-slim
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     libcairo2 \
@@ -18,16 +17,9 @@ RUN apt-get update && apt-get install -y \
     libfontconfig1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
 RUN pip install --no-cache-dir uv
-
 WORKDIR /app
-
 COPY pyproject.toml .
-
-RUN uv venv /opt/dictionary-venv && \
-    uv sync --python=/opt/dictionary-venv/bin/python
-
-ENV VIRTUAL_ENV=/opt/dictionary-venv
-ENV PATH="/opt/dictionary-venv/bin:$PATH"
-
+RUN uv sync
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
