@@ -37,7 +37,7 @@ export default function TablePagination({
           aria-label="first"
           className={`${base} text-sm px-3 py-2 ${page === 1 ? disabled : enabled} ${txt}`}
         >
-          <FontAwesomeIcon icon={faAngleDoubleRight} />
+          <FontAwesomeIcon icon={faAngleDoubleLeft} />
         </button>
 
         <button
@@ -46,7 +46,7 @@ export default function TablePagination({
           aria-label="prev"
           className={`${base} px-3 text-sm py-2 ${page === 1 ? disabled : enabled} ${txt}`}
         >
-          <FontAwesomeIcon icon={faChevronRight} />
+          <FontAwesomeIcon icon={faChevronLeft} />
         </button>
 
         <div className="px-3 py-2 rounded-lg bg-indigo-50 dark:bg-[#0b1a2b] text-sm flex items-center gap-2">
@@ -61,7 +61,7 @@ export default function TablePagination({
           aria-label="next"
           className={`${base} px-3 text-sm py-2 ${page === totalPages ? disabled : enabled} ${txt}`}
         >
-          <FontAwesomeIcon icon={faChevronLeft} />
+          <FontAwesomeIcon icon={faChevronRight} />
         </button>
 
         <button
@@ -70,7 +70,7 @@ export default function TablePagination({
           aria-label="last"
           className={`${base} px-3 text-sm py-2 ${page === totalPages ? disabled : enabled} ${txt}`}
         >
-          <FontAwesomeIcon icon={faAngleDoubleLeft} />
+          <FontAwesomeIcon icon={faAngleDoubleRight} />
         </button>
       </div>
 
@@ -81,7 +81,7 @@ export default function TablePagination({
           aria-label="prev"
           className={`${base} px-3 py-2 ${page === 1 ? disabled : enabled} ${txt}`}
         >
-          <FontAwesomeIcon icon={faChevronRight} />
+          <FontAwesomeIcon icon={faChevronLeft} />
         </button>
 
         <div className="px-3 py-2 rounded-lg bg-indigo-100 dark:bg-[#152036] text-sm text-center min-w-22">
@@ -97,7 +97,7 @@ export default function TablePagination({
           aria-label="next"
           className={`${base} px-3 py-2 ${page === totalPages ? disabled : enabled} ${txt}`}
         >
-          <FontAwesomeIcon icon={faChevronLeft} />
+          <FontAwesomeIcon icon={faChevronRight} />
         </button>
       </div>
     </nav>

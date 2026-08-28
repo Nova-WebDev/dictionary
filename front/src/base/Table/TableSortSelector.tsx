@@ -30,7 +30,7 @@ export default function TableSortSelector<T>({
     <div className="relative mr-2 md:ml-3 md:hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="px-3 py-2 bg-white dark:bg-[#182238] rounded-md flex items-center gap-2 text-sm text-gray-800 dark:text-gray-100 border border-indigo-200 dark:border-gray-700/40"
+        className="px-3 py-2 bg-white dark:bg-[#093752] rounded-md flex items-center gap-2 text-sm text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/40"
       >
         <span>Sort</span>
         <span className="inline-flex items-center justify-center w-5 h-5 ml-auto rounded-full">
@@ -38,13 +38,13 @@ export default function TableSortSelector<T>({
             icon={faChevronDown}
             className={`text-[11px] transition-transform ${
               open ? "rotate-180" : "rotate-0"
-            } text-gray-500 dark:text-gray-400`}
+            } text-slate-500 dark:text-slate-400`}
           />
         </span>
       </button>
 
       {open && (
-        <div className="absolute left-0 mt-2 w-52 bg-white dark:bg-[#0f1724] border border-indigo-200 dark:border-gray-700 rounded-xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute left-0 mt-2 w-52 bg-white dark:bg-[#062940] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
           {columns
             .filter((c) => c.orderBy)
             .map((col, i) => (
@@ -56,8 +56,8 @@ export default function TableSortSelector<T>({
                 }}
                 className={`w-full px-3 py-2 text-left flex items-center justify-between text-sm ${
                   isActive(col)
-                    ? "bg-indigo-50 dark:bg-[#111a2b] text-indigo-700 dark:text-indigo-300"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-[#111a2b]"
+                    ? "bg-cyan-50 dark:bg-[#093752] text-cyan-700 dark:text-cyan-300"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-cyan-50 dark:hover:bg-[#093752]"
                 }`}
               >
                 <span>{col.label}</span>

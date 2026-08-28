@@ -1,3 +1,5 @@
+import time
+
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,22 +23,19 @@ from di.auth_providers import (
     get_logout_refresh_token_uc,
 )
 
-ACCESS_TOKEN_MAX_AGE = 15 * 60
-
 router = APIRouter()
 
-
-def _set_access_cookie(response: Response, access_token: str) -> None:
+def _set_access_cookie(response: Response, access_token: str, expires_at: int) -> None:
+    max_age = max(expires_at - int(time.time()), 0)
     response.set_cookie(
         key="access_token",
         value=access_token,
-        max_age=ACCESS_TOKEN_MAX_AGE,
+        max_age=max_age,
         httponly=True,
         secure=True,
         samesite="lax",
         path="/",
     )
-
 
 @router.post("/send-code/")
 async def send_code(
@@ -45,6 +44,7 @@ async def send_code(
 ):
     validate_email_uc = get_validate_email_uc(session)
     send_code_uc = get_send_code_uc()
+
     await validate_email_uc.execute(payload.email)
     return await send_code_uc.execute(payload.email)
 
@@ -70,9 +70,12 @@ async def verify_code(
     refresh_token_entity = await generate_refresh_uc.execute(user_identity)
     access_token = await generate_access_uc.execute(refresh_token_entity)
 
-    _set_access_cookie(response, access_token)
+    _set_access_cookie(response, access_token.token, access_token.expires_at)
 
-    return RefreshTokenResponse(refresh_token=refresh_token_entity.token)
+    return RefreshTokenResponse(
+        refresh_token=refresh_token_entity.token,
+        access_token_expires_at=access_token.expires_at,
+    )
 
 
 @router.post("/refresh/", response_model=RefreshTokenResponse)
@@ -86,9 +89,12 @@ async def refresh_token(
     rotated = await rotate_uc.execute(payload.refresh_token)
     access_token = await generate_access_uc.execute(rotated)
 
-    _set_access_cookie(response, access_token)
+    _set_access_cookie(response, access_token.token, access_token.expires_at)
 
-    return RefreshTokenResponse(refresh_token=rotated.token)
+    return RefreshTokenResponse(
+        refresh_token=rotated.token,
+        access_token_expires_at=access_token.expires_at,
+    )
 
 
 @router.post("/log-out/")
@@ -97,6 +103,8 @@ async def logout(
     response: Response,
 ):
     logout_uc = get_logout_refresh_token_uc()
+
     await logout_uc.execute(payload.refresh_token)
+
     response.delete_cookie("access_token", path="/")
     return {"detail": "Logged out"}

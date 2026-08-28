@@ -23,7 +23,7 @@ export default function TableSearch({ value, onChange }: TableSearchProps) {
         <div className="relative">
           <FontAwesomeIcon
             icon={faSearch}
-            className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2 dark:text-gray-500"
+            className="absolute text-slate-400 -translate-y-1/2 right-3 top-1/2 dark:text-slate-500"
           />
           <input
             type="text"
@@ -32,11 +32,11 @@ export default function TableSearch({ value, onChange }: TableSearchProps) {
             placeholder="جستجو..."
             className="
               w-full pr-10 pl-3 py-2 rounded-md text-sm
-              bg-white dark:bg-[#182238]
-              border border-indigo-200 dark:border-[#1F2A44]
-              text-gray-800 dark:text-gray-200
-              placeholder-gray-400 dark:placeholder-gray-500
-              focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-sky-600
+              bg-white dark:bg-[#093752]
+              border border-slate-200 dark:border-slate-700/40
+              text-slate-800 dark:text-slate-200
+              placeholder-slate-400 dark:placeholder-slate-400
+              focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:focus:ring-cyan-500
               transition
             "
           />
@@ -47,20 +47,20 @@ export default function TableSearch({ value, onChange }: TableSearchProps) {
         <div className="relative">
           <FontAwesomeIcon
             icon={faSearch}
-            className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2 dark:text-gray-500"
+            className="absolute text-slate-400 -translate-y-1/2 right-3 top-1/2 dark:text-slate-500"
           />
           <input
             type="text"
             defaultValue={value}
             onChange={handleChange}
-            placeholder="جستجو..."
+            placeholder="search..."
             className="
               w-full pr-10 pl-3 py-2 rounded-md text-sm
-              bg-white dark:bg-[#182238]
-              border border-indigo-200 dark:border-[#1F2A44]
-              text-gray-800 dark:text-gray-200
-              placeholder-gray-400 dark:placeholder-gray-500
-              focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-sky-600
+              bg-white dark:bg-[#093752]
+              border border-slate-200 dark:border-slate-700/40
+              text-slate-800 dark:text-slate-200
+              placeholder-slate-400 dark:placeholder-slate-400
+              focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:focus:ring-cyan-500
               transition
             "
           />

@@ -11,11 +11,11 @@ export default function TableBody<T>({ data, columns, actions, mode }: TableBody
                 key={i}
                 className={`
                   px-4 py-4 align-middle whitespace-nowrap
-                  bg-indigo-100 dark:bg-[#152036]
-                  text-gray-800 dark:text-gray-100
+                  bg-slate-100 dark:bg-slate-800
+                  text-slate-800 dark:text-slate-100
                   transition-colors duration-200
-                  group-hover:bg-indigo-200 dark:group-hover:dark:bg-[#1a2742]
-                  first:rounded-r-xl
+                  group-hover:bg-slate-200 dark:group-hover:bg-slate-700
+                  first:rounded-l-xl
                 `}
               >
                 <div className="flex items-center h-12">
@@ -28,11 +28,11 @@ export default function TableBody<T>({ data, columns, actions, mode }: TableBody
               <td
                 className={`
                   px-4 py-4 align-middle whitespace-nowrap
-                  bg-indigo-100 dark:bg-[#152036]
-                  text-gray-800 dark:text-gray-100
+                  bg-slate-100 dark:bg-slate-800
+                  text-slate-800 dark:text-slate-100
                   transition-colors duration-200
-                  group-hover:bg-indigo-200 dark:group-hover:dark:bg-[#1a2742]
-                  last:rounded-l-xl
+                  group-hover:bg-slate-200 dark:group-hover:bg-slate-700
+                  last:rounded-r-xl
                 `}
               >
                 <div className="flex items-center gap-2">
@@ -54,12 +54,12 @@ export default function TableBody<T>({ data, columns, actions, mode }: TableBody
         <article
           key={idx}
           className="
-            bg-indigo-100 dark:bg-[#152036]
+            bg-slate-100 dark:bg-slate-800
             rounded-2xl p-4
             shadow-sm
             transition-all duration-200
             hover:shadow-md
-            hover:bg-indigo-200 dark:hover:bg-[#1a2742]
+            hover:bg-slate-200 dark:hover:bg-slate-700
             focus-within:shadow-md
             flex flex-col gap-3
             ring-0 outline-none
@@ -72,22 +72,22 @@ export default function TableBody<T>({ data, columns, actions, mode }: TableBody
               className="flex flex-col gap-1 px-1 py-0.5"
               aria-label={`field-${col.label.toLowerCase().replace(/\s+/g, "-")}`}
             >
-              <div className="text-[11px] leading-4 text-gray-500 dark:text-gray-300">
+              <div className="text-[11px] leading-4 text-slate-500 dark:text-slate-300">
                 {col.label}
               </div>
 
-              <div className="p-2 text-sm font-normal leading-5 text-gray-800 wrap-break-word dark:text-gray-100">
+              <div className="p-2 text-sm font-normal leading-5 text-slate-800 wrap-break-word dark:text-slate-100">
                 {col.render(row)}
               </div>
 
               {i !== columns.length - 1 && (
-                <div className="w-full h-px mt-2 bg-gray-200/60 dark:bg-white/6" />
+                <div className="w-full h-px mt-2 bg-slate-200/60 dark:bg-white/6" />
               )}
             </div>
           ))}
 
           {actions && (
-            <div className="flex flex-col gap-2 pt-2 mt-1 border-t border-gray-300/30 dark:border-gray-600/30">
+            <div className="flex flex-col gap-2 pt-2 mt-1 border-t border-slate-300/30 dark:border-slate-600/30">
               {actions.map((action, i) => (
                 <div key={i} className="w-full">
                   <div className="flex items-center justify-center w-full">

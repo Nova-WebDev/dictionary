@@ -28,9 +28,9 @@ export default function TableHeader<T>({
             className={`
               px-6 py-6 font-semibold text-left whitespace-nowrap transition select-none
               ${col.orderBy ? "cursor-pointer" : ""}
-              ${isActive(col) ? "text-indigo-200" : "text-gray-100"}
-              ${i === 0 ? "rounded-br-xl rounded-tr-xl" : ""}
-              bg-indigo-600 dark:bg-[#002856]
+              ${isActive(col) ? "text-cyan-200" : "text-cyan-50"}
+              ${i === 0 ? "rounded-tl-xl rounded-bl-xl" : ""}
+              bg-cyan-700 dark:bg-[#093752]
             `}
           >
             <div className="flex items-center gap-2">
@@ -40,7 +40,7 @@ export default function TableHeader<T>({
                   <FontAwesomeIcon
                     icon={getIcon(col)}
                     className={`text-[12px] ${
-                      isActive(col) ? "text-indigo-200" : "text-gray-100"
+                      isActive(col) ? "text-cyan-200" : "text-cyan-50"
                     }`}
                   />
                 </span>
@@ -51,9 +51,9 @@ export default function TableHeader<T>({
 
         <th
           className="
-            px-6 py-5 font-semibold text-left text-gray-100 whitespace-nowrap
-            bg-indigo-600 dark:bg-[#002856]
-            rounded-bl-xl rounded-tl-xl
+            px-6 py-5 font-semibold text-left text-cyan-50 whitespace-nowrap
+            bg-cyan-700 dark:bg-[#093752]
+            rounded-tr-xl rounded-br-xl
           "
         >
           Actions

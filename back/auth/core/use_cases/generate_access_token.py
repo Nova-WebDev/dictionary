@@ -1,6 +1,7 @@
 import time
 from dataclasses import asdict
 
+from auth.core.entities.access_token import AccessToken
 from auth.core.entities.refresh_token import RefreshToken
 from auth.core.errors.errors import TokenGenerationError
 from auth.core.interfaces.token_header_generator import ITokenHeaderGenerator
@@ -20,7 +21,7 @@ class GenerateAccessToken:
         self.payload_generator = payload_generator
         self.signer = signer
 
-    async def execute(self, refresh_token: RefreshToken) -> str:
+    async def execute(self, refresh_token: RefreshToken) -> AccessToken:
         now = int(time.time())
 
         header = await self.header_generator.generate_header()
@@ -42,5 +43,6 @@ class GenerateAccessToken:
             raise TokenGenerationError() from exc
 
         signature_b64 = encode_bytes(signature)
+        token = f"{unsigned}.{signature_b64}"
 
-        return f"{unsigned}.{signature_b64}"
+        return AccessToken(token=token, expires_at=payload.exp)

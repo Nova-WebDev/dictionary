@@ -28,9 +28,9 @@ export default function TableLimitSelector({ limit, onChange }: TableLimitSelect
         onClick={() => setOpen(!open)}
         className="
           px-3 py-2 rounded-md flex items-center gap-2 text-sm
-          bg-indigo-100 dark:bg-[#152036]
-          text-gray-800 dark:text-gray-200
-          border border-indigo-200 dark:border-gray-700/40
+          bg-slate-100 dark:bg-[#093752]
+          text-slate-800 dark:text-slate-200
+          border border-slate-200 dark:border-slate-700/40
         "
       >
         <span>{limit}</span>
@@ -40,7 +40,7 @@ export default function TableLimitSelector({ limit, onChange }: TableLimitSelect
             icon={faChevronDown}
             className={`text-[11px] transition-transform ${
               open ? "rotate-180" : "rotate-0"
-            } text-gray-500 dark:text-gray-400`}
+            } text-slate-500 dark:text-slate-400`}
           />
         </span>
       </button>
@@ -48,9 +48,9 @@ export default function TableLimitSelector({ limit, onChange }: TableLimitSelect
       {open && (
         <div
           className="
-            absolute left-0 bottom-full mb-2 w-40 rounded-md shadow-xl z-50 overflow-hidden
-            bg-indigo-100 dark:bg-[#152036]
-            border border-indigo-200 dark:border-gray-700
+            absolute right-0 bottom-full mb-2 w-40 rounded-md shadow-xl z-50 overflow-hidden
+            bg-slate-100 dark:bg-[#093752]
+            border border-slate-200 dark:border-slate-700
           "
         >
           {options.map((opt) => (
@@ -64,15 +64,15 @@ export default function TableLimitSelector({ limit, onChange }: TableLimitSelect
                 w-full px-3 py-2 text-left text-sm flex items-center justify-between
                 ${
                   limit === opt
-                    ? "bg-indigo-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-                    : "text-gray-600 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-[#111a2b]"
+                    ? "bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                    : "text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#062940]"
                 }
               `}
             >
               <span>{opt}</span>
 
               {limit === opt && (
-                <span className="inline-block w-2 h-2 rounded-full bg-indigo-600 dark:bg-[#43f9e4]" />
+                <span className="inline-block w-2 h-2 rounded-full bg-cyan-600 dark:bg-cyan-400" />
               )}
             </button>
           ))}
