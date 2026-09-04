@@ -3,7 +3,7 @@ from auth.core.interfaces.block_service import IBlockService
 from auth.core.interfaces.code_generator import ICodeGenerator
 from auth.core.interfaces.code_store import ICodeStore
 from auth.core.interfaces.email_sender import IEmailSender
-
+from app.utils.logger import logger
 
 class SendVerificationCode:
     def __init__(
@@ -24,6 +24,7 @@ class SendVerificationCode:
         await self.block_service.block(email, 60)
         code = await self.code_generator.generate()
         await self.code_store.save(email, code)
-        await self.email_sender.send(email, code)
+        logger.error(code)
+        # await self.email_sender.send(email, code)
 
         return {"email": email, "sent": True}

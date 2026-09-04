@@ -1,4 +1,3 @@
-from dictionary.core.entities.word_entry_with_author import WordEntryWithAuthorEntity
 from dictionary.core.entities.word_order_field import WordOrderField
 from dictionary.core.interfaces.word_repository import IWordRepository
 
