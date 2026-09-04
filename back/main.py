@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.data.init_db import init_db
 from app.redis.redis_client import redis_client
 from app.errors import DomainError
 from app.utils.logger import logger
@@ -15,7 +14,6 @@ from routers.dictionary_router import router as dictionary_router
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    await init_db()
     yield
     await redis_client.aclose()
 

@@ -145,14 +145,36 @@ alembic stamp head
 
 > Do NOT run `alembic upgrade head` on a DB that already has the tables — it will try to `CREATE TABLE users` and fail because it already exists.
 
-## Resolving the `create_all()` overlap
+## How the app applies migrations (`create_all` removed)
 
-Right now `main.py` still calls `init_db()` (which runs `create_all`) on startup. With Alembic in place, you should eventually remove that so the schema is managed only by Alembic:
+`create_all()` has been removed from the app — the schema is now owned by Alembic only.
 
-- Keep `init_db()` → tables auto-created on startup, but Alembic's version table is ignored (can drift).
-- Remove `init_db()` → cleaner, but fresh databases must run `alembic upgrade head` before the app starts.
+The backend Docker image runs migrations automatically on startup. Its entrypoint is:
 
-Recommendation: remove `create_all` and run `alembic upgrade head` as part of startup/deploy. This is a decision for the team — flag it and pick one.
+```
+alembic upgrade head && gunicorn main:app ...
+```
+
+So on `docker compose up`, any pending migrations apply before the app starts:
+
+- Fresh database → `alembic upgrade head` creates the tables and indexes.
+- Already-stamped database → no-op, app starts normally.
+
+If you run the backend outside Docker (e.g. `uvicorn main:app`), run migrations manually first:
+
+```bash
+cd back && alembic upgrade head
+```
+
+### Adopting a database created by the old `create_all`
+
+If the DB already has the tables but no `alembic_version` table (from before this change), the startup migration fails with `relation "users" already exists`. Stamp it once:
+
+```bash
+alembic stamp head
+```
+
+After that, startup and future `upgrade head` runs work normally.
 
 ## Common pitfalls
 
