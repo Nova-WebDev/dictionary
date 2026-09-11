@@ -20,6 +20,8 @@ class User(Base):
 
     username: Mapped[str | None] = mapped_column(String(50), default=None)
 
+    address: Mapped[str | None] = mapped_column(String(255), default=None)
+
     role: Mapped[int] = mapped_column(Integer, default=1)
 
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False)
