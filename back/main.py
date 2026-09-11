@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -18,7 +19,7 @@ async def lifespan(_app: FastAPI):
     await redis_client.aclose()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path=os.getenv("ROOT_PATH", ""))
 
 
 @app.exception_handler(DomainError)
