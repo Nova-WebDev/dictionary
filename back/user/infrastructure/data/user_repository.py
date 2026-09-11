@@ -1,9 +1,16 @@
+import uuid
+
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from user.core.entities.user_entity import UserEntity
 from user.core.entities.user_order_field import UserOrderField
-from user.core.errors.errors import UserNotFoundError, UsernameUpdateError
+from user.core.errors.errors import (
+    UserCreationError,
+    UserNotFoundError,
+    UsernameUpdateError,
+)
 from user.core.interfaces.user_repository import IUserRepository
 from user.infrastructure.data.models import User
 
@@ -33,6 +40,33 @@ class UserRepository(IUserRepository):
             return None
 
         return self._to_entity(user)
+
+    async def get_by_email(self, email: str) -> UserEntity | None:
+        result = await self.session.execute(
+            select(User).where(User.email == email)
+        )
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            return None
+
+        return self._to_entity(user)
+
+    async def create_user(self, email: str, role: int) -> UserEntity:
+        new_user = User(
+            email=email,
+            public_id=uuid.uuid4().hex,
+            role=role,
+            is_blocked=False,
+        )
+        self.session.add(new_user)
+
+        try:
+            await self.session.flush()
+        except IntegrityError as exc:
+            raise UserCreationError() from exc
+
+        return self._to_entity(new_user)
 
     async def update_block_status(self, public_id: str, is_blocked: bool) -> UserEntity:
         result = await self.session.execute(

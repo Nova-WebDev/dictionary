@@ -5,11 +5,13 @@ from app.data.db import get_session
 from app.security.dependencies import get_current_user
 
 from schemas.user.block_user_request import BlockUserRequest
+from schemas.user.create_user_request import CreateUserRequest
 from schemas.user.get_users_query import GetUsersQuery
 from schemas.user.update_role_request import UpdateRoleRequest
 from schemas.user.update_username_request import UpdateUsernameRequest
 
 from di.user_providers import (
+    get_create_user_uc,
     get_user_profile_uc,
     get_users_paginated_uc,
     get_update_username_uc,
@@ -56,6 +58,20 @@ async def get_users(
         order_by=query.order_by,
         descending=query.descending,
         include_self=query.include_self,
+    )
+
+
+@router.post("/")
+async def create_user(
+    payload: CreateUserRequest,
+    session: AsyncSession = Depends(get_session),
+    _user: dict = Depends(get_current_user),
+):
+    uc = get_create_user_uc(session)
+    return await uc.execute(
+        requester_role=_user["role"],
+        email=payload.email,
+        role=payload.role,
     )
 
 

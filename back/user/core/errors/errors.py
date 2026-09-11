@@ -8,6 +8,20 @@ class UserNotFoundError(DomainError):
         super().__init__(message)
 
 
+class EmailAlreadyExistsError(DomainError):
+    status_code = 409
+
+    def __init__(self, message: str = "Email already registered"):
+        super().__init__(message)
+
+
+class UserCreationError(DomainError):
+    status_code = 500
+
+    def __init__(self, message: str = "Failed to create user"):
+        super().__init__(message)
+
+
 class PermissionDeniedError(DomainError):
     status_code = 403
 
